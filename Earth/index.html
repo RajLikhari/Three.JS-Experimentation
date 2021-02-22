@@ -13,7 +13,7 @@
     <script src="./trackball.js"></script>
     <script>
         var scene = new THREE.Scene();
-        var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        var camera = new THREE.PerspectiveCamera(1, window.innerWidth/window.innerHeight, 0.1, 100000000);
         camera.position.z = 5;
         var renderer = new THREE.WebGLRenderer({antialias: true});
         renderer.setClearColor("#000000");
@@ -25,20 +25,21 @@
             camera.updateProjectionMatrix();
 
         });
+        //NEED TEXTURELOADER FOR LOADING IMAGES!!!
 
         var raycaster = new THREE.Raycaster();
         var mouse = new THREE.Vector2();
 
        //Adds a light to the page
        scene.add(new THREE.AmbientLight(0x333333));
-        var light = new THREE.DirectionalLight(0xffffff, 1);
+        var light = new THREE.DirectionalLight(0xffffff, 0.8);
         light.position.set(5,3,5);
         scene.add(light);
 
         const material = new THREE.MeshPhongMaterial({
             map: THREE.ImageUtils.loadTexture('./earf.jpg'),
             bumpMap: THREE.ImageUtils.loadTexture('./bump.jpg'),
-            bumpScale: 0.05
+            bumpScale: 0.05,
         })
 
         var spheregeo = new THREE.SphereGeometry(2.5, 40, 40);
@@ -46,23 +47,62 @@
         sphere.rotation.z = 0.2;
         scene.add(sphere);
 
-        var geometry = new THREE.SphereGeometry(90, 32, 32);
+        var geometry = new THREE.SphereGeometry(900, 32, 32);
         var material1 = new THREE.MeshBasicMaterial();
         material1.map = THREE.ImageUtils.loadTexture('./stars.png');
         material1.side = THREE.BackSide;
         var mesh = new THREE.Mesh(geometry, material1);
         scene.add(mesh);
-        
-    
+
+        var clouds = new THREE.SphereGeometry(2.6, 40, 40);
+        const material10 = new THREE.MeshPhongMaterial({
+            map: THREE.ImageUtils.loadTexture('./clouds.png'),
+            transparent: true
+
+        })
+        var cloud = new THREE.Mesh(clouds, material10);
+        scene.add(cloud);
+
+        var moongeo = new THREE.SphereGeometry(0.8, 40, 40);
+        const moonmaterial = new THREE.MeshPhongMaterial({
+            map: THREE.ImageUtils.loadTexture('./moon.jpg'),
+            bumpMap: THREE.ImageUtils.loadTexture('./moonbump.jpg'),
+            bumpScale: 0.01
+        })
+        var moon = new THREE.Mesh(moongeo, moonmaterial);
+        scene.add(moon);
+        moon.position.set(7, 0, 0);
+
+        var jupgeo = new THREE.SphereGeometry(10, 40, 40);
+        const jupmaterial = new THREE.MeshPhongMaterial({
+            map: THREE.ImageUtils.loadTexture('./jupiter.jpg'),
+        })
+        var jupiter = new THREE.Mesh(jupgeo, jupmaterial);
+        scene.add(jupiter);
+        jupiter.position.set(40, 0, 0);
+
+
+            
         var controls = new THREE.TrackballControls(camera);
-        render();
         function render() {
             controls.update();
             sphere.rotation.y += 0.0005;
+            mesh.rotation.y += 0.00005;
+            cloud.rotation.y += 0.0005;
+            moon.rotation.y += 0.0005;
+            jupiter.rotation.y += 0.0005;
             requestAnimationFrame(render);
             renderer.render(scene,camera);
         }
-        
+
+        function click(event){
+            camera.position.x += 20;
+        }
+
+        render();
+        window.addEventListener('click', click);
+
+
 
         /*
         function click(event) {
@@ -86,8 +126,8 @@
                 window.addEventListener('click', click);
 
         }
-        */
         render();
+        */
 
     
 
