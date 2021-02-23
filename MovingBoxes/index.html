@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js"></script>
+    
+    <script>
+        //Makes the scene
+       var scene = new THREE.Scene();
+
+       //Makes the camera
+       var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+       camera.position.z = 5;
+
+       //Makes the renderer, basically what you see with 
+       var renderer = new THREE.WebGLRenderer({antialias: true});
+       renderer.setClearColor("#e6e6fa");
+
+       //Sets the size of the renderer
+       renderer.setSize(window.innerWidth, window.innerHeight);
+
+        //Makes your Canvas
+       document.body.appendChild(renderer.domElement);
+
+        //Makes the page responsive
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+
+        });
+
+        var raycaster = new THREE.Raycaster();
+        var mouse = new THREE.Vector2();
+
+        //Adds a sphere to the page
+        var geometry = new THREE.BoxGeometry(1, 1, 1);
+        var material = new THREE.MeshLambertMaterial({color: 0xF7F7F7});
+        //var mesh = new THREE.Mesh(geometry, material);
+        //mesh.rotation.set(45,0,0); Rotation
+        //mesh.scale.set(1,2,1); Scaling
+        //mesh.position.set(0,0,0); new posiiton
+        //scene.add(mesh);
+
+        meshX = -10;
+        for(var i = 0; i < 15; i++){
+            var mesh = new THREE.Mesh(geometry, material);
+            mesh.position.x = (Math.random() - 0.5) * 10;
+            mesh.position.y = (Math.random() - 0.5) * 10;
+            mesh.position.z = (Math.random() - 0.5) * 10;
+            scene.add(mesh);
+            meshX += 1;
+        }
+
+
+
+
+        //Adds a light to the page
+        var light = new THREE.PointLight(0xFFFFFF, 1, 1000);
+        light.position.set(0, 0, 0);
+        scene.add(light);
+
+        var light = new THREE.PointLight(0xFFFFFF, 2, 1000);
+        light.position.set(0, 0, 100);
+        scene.add(light);
+
+        //Starts the rendering, purpose of this function is to maintain aspect ratio
+        var render = function() {
+            requestAnimationFrame(render); //Creates a loop to redraw the renderer every time page is refreshed
+            //mesh.rotation.x += 0.01; 
+            //mesh.rotation.y += 0.01; 
+        
+            renderer.render(scene, camera);
+        }
+
+        function onMouseMove(event) {
+            event.preventDefault();
+            mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+            mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+
+            var intersects = raycaster.intersectObjects(scene.children, true);
+            for(var i = 0; i < intersects.length; i++){
+                //This is GSAP!!! Learn it
+                this.tl = new TimelineMax().delay(.3);
+                this.tl.to(intersects[i].object.scale, 1, {x: 2, ease: Expo.easeOut})
+                this.tl.to(intersects[i].object.scale, .5, {x: 0.5, ease: Expo.easeOut})
+                this.tl.to(intersects[i].object.position, 0.5, {x: 2, ease: Expo.easeOut})
+                this.tl.to(intersects[i].object.rotation, .5, {y: Math.PI* .5, ease: Expo.easeOut}, "=-1.5") //Happens 1.5 seconds before it would
+                
+            }
+        }
+
+        render();
+        window.addEventListener('mousemove', onMouseMove);
+
+    </script>
+    
+</body>
+</html>
